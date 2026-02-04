@@ -41,9 +41,8 @@
       background-color: #f44336;
       color: white;
       position: fixed;
-      left: 60%;
-      top: 60%;
-    }
+      visibility: hidden; /* hide until positioned */
+}
 
 
     #celebration {
@@ -66,49 +65,59 @@
 
  
   <script>
-    const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
-    const celebration = document.getElementById("celebration");
-  
-    const padding = 16;
-  
-    function moveNoButton(mouseX, mouseY) {
-      const rect = noBtn.getBoundingClientRect();
-  
-      const maxX = window.innerWidth - rect.width - padding;
-      const maxY = window.innerHeight - rect.height - padding;
-  
-      let newX = rect.left + (rect.left - mouseX);
-      let newY = rect.top + (rect.top - mouseY);
-  
-      newX = Math.max(padding, Math.min(maxX, newX));
-      newY = Math.max(padding, Math.min(maxY, newY));
-  
-      noBtn.style.left = newX + "px";
-      noBtn.style.top = newY + "px";
-    }
-
-    document.addEventListener("mousemove", (e) => {
-      const rect = noBtn.getBoundingClientRect();
-      const dx = e.clientX - (rect.left + rect.width / 2);
-      const dy = e.clientY - (rect.top + rect.height / 2);
-  
-      const triggerDistance = 140;
-  
-      if (Math.hypot(dx, dy) < triggerDistance) {
-        moveNoButton(e.clientX, e.clientY);
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const celebration = document.getElementById("celebration");
+    
+      const padding = 20;
+      const escapeDistance = 120;
+    
+      // Set correct initial position AFTER layout
+      window.addEventListener("load", () => {
+        const rect = noBtn.getBoundingClientRect();
+        const left = (window.innerWidth - rect.width) / 2 + 80;
+        const top = (window.innerHeight - rect.height) / 2;
+    
+        noBtn.style.left = left + "px";
+        noBtn.style.top = top + "px";
+        noBtn.style.visibility = "visible";
+      });
+    
+      function moveNoButton(mouseX, mouseY) {
+        const rect = noBtn.getBoundingClientRect();
+    
+        let newX = rect.left + (rect.left - mouseX > 0 ? escapeDistance : -escapeDistance);
+        let newY = rect.top + (rect.top - mouseY > 0 ? escapeDistance : -escapeDistance);
+    
+        const maxX = window.innerWidth - rect.width - padding;
+        const maxY = window.innerHeight - rect.height - padding;
+    
+        newX = Math.max(padding, Math.min(maxX, newX));
+        newY = Math.max(padding, Math.min(maxY, newY));
+    
+        noBtn.style.left = newX + "px";
+        noBtn.style.top = newY + "px";
       }
-    });
-  
-    noBtn.addEventListener("click", (e) => {
-      moveNoButton(e.clientX, e.clientY);
-    });
-  
-    yesBtn.addEventListener("click", () => {
-      celebration.style.display = "block";
-      yesBtn.style.display = "none";
-      noBtn.style.display = "none";
-    });
+    
+      document.addEventListener("mousemove", (e) => {
+        const rect = noBtn.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+    
+        if (Math.hypot(dx, dy) < 120) {
+          moveNoButton(e.clientX, e.clientY);
+        }
+      });
+    
+      noBtn.addEventListener("click", (e) => {
+        moveNoButton(e.clientX, e.clientY);
+      });
+    
+      yesBtn.addEventListener("click", () => {
+        celebration.style.display = "block";
+        yesBtn.style.display = "none";
+        noBtn.style.display = "none";
+      });
 </script>
 
 

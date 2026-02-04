@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Trip Invite 😄</title>
+
   <style>
     body {
       height: 100vh;
@@ -12,15 +13,31 @@
       align-items: center;
       background: linear-gradient(135deg, #ffecd2, #fcb69f);
       font-family: Arial, sans-serif;
+      overflow: hidden;
     }
 
     .container {
       text-align: center;
-      position: relative;
     }
 
     h1 {
-      margin-bottom: 30px;
+      margin-bottom: 15px;
+    }
+
+    .gif {
+      width: 220px;
+      display: block;
+      margin: 10px auto 20px;
+    }
+
+    #celebrationGif {
+      display: none;
+      width: 260px;
+      margin: 20px auto;
+    }
+
+    .btn-group {
+      margin-top: 10px;
     }
 
     button {
@@ -41,21 +58,8 @@
       background-color: #f44336;
       color: white;
       position: fixed;
-      visibility: hidden; /* hide until positioned */
+      visibility: hidden; /* shown after JS positions it */
     }
-
-    .gif {
-      width: 200px;
-      margin: 10px auto;
-    }
-
-    #celebrationGif {
-      display: none;
-      width: 250px;
-      margin: 20px auto;
-    }
-
-
 
     #celebration {
       display: none;
@@ -64,89 +68,112 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
     <h1>Will you join me for a trip? 🌍✈️</h1>
-    <img 
+
+    <!-- Intro GIF -->
+    <img
+      id="introGif"
       class="gif"
-      src="https://media.tenor.com/FjMj_01lPz4AAAAM/spongebob-squarepants-spongebob.gif"
-      alt="thinking gif"
+      src="https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif"
+      alt="asking gif"
     />
 
-    <img 
+    <!-- Buttons -->
+    <div class="btn-group">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn">No</button>
+    </div>
+
+    <!-- Celebration -->
+    <div id="celebration">🎉🥳 Yay!!! 🎉🥳</div>
+
+    <img
       id="celebrationGif"
-      src="https://media.tenor.com/TsNWXQ2E8pAAAAAM/celebration-confetti.gif"
+      src="https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif"
       alt="celebration gif"
     />
-
-
-    <button id="yesBtn">Yes</button>
-    <button id="noBtn">No</button>
-
-    <div id="celebration">🎉🥳 Yay!!! 🎉🥳</div>
   </div>
 
- 
   <script>
-      const noBtn = document.getElementById("noBtn");
-      const yesBtn = document.getElementById("yesBtn");
-      const celebration = document.getElementById("celebration");
-    
-      const padding = 20;
-      const escapeDistance = 120;
-    
-      // Set correct initial position AFTER layout
-      window.addEventListener("load", () => {
-        const rect = noBtn.getBoundingClientRect();
-        const left = (window.innerWidth - rect.width) / 2 + 80;
-        const top = (window.innerHeight - rect.height) / 2;
-    
-        noBtn.style.left = left + "px";
-        noBtn.style.top = top + "px";
-        noBtn.style.visibility = "visible";
-      });
-    
-      function moveNoButton(mouseX, mouseY) {
-        const rect = noBtn.getBoundingClientRect();
-    
-        let newX = rect.left + (rect.left - mouseX > 0 ? escapeDistance : -escapeDistance);
-        let newY = rect.top + (rect.top - mouseY > 0 ? escapeDistance : -escapeDistance);
-    
-        const maxX = window.innerWidth - rect.width - padding;
-        const maxY = window.innerHeight - rect.height - padding;
-    
-        newX = Math.max(padding, Math.min(maxX, newX));
-        newY = Math.max(padding, Math.min(maxY, newY));
-    
-        noBtn.style.left = newX + "px";
-        noBtn.style.top = newY + "px";
-      }
-    
-      document.addEventListener("mousemove", (e) => {
-        const rect = noBtn.getBoundingClientRect();
-        const dx = e.clientX - (rect.left + rect.width / 2);
-        const dy = e.clientY - (rect.top + rect.height / 2);
-    
-        if (Math.hypot(dx, dy) < 120) {
-          moveNoButton(e.clientX, e.clientY);
-        }
-      });
-    
-      noBtn.addEventListener("click", (e) => {
-        moveNoButton(e.clientX, e.clientY);
-      });
-    
-      yesBtn.addEventListener("click", () => {
-        celebration.style.display = "block";
-        document.getElementById("celebrationGif").style.display = "block";
-        yesBtn.style.display = "none";
-        noBtn.style.display = "none";
-      });
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const celebration = document.getElementById("celebration");
+    const introGif = document.getElementById("introGif");
+    const celebrationGif = document.getElementById("celebrationGif");
 
-</script>
+    const padding = 20;
+    const escapeDistance = 120;
 
+    // Correct initial position AFTER layout
+    window.addEventListener("load", () => {
+      const rect = noBtn.getBoundingClientRect();
+      const left = (window.innerWidth - rect.width) / 2 + 90;
+      const top = (window.innerHeight - rect.height) / 2 + 120;
 
+      noBtn.style.left = left + "px";
+      noBtn.style.top = top + "px";
+      noBtn.style.visibility = "visible";
+    });
+
+    // Mouse-avoid logic (edge-safe)
+    document.addEventListener("mousemove", (e) => {
+      const rect = noBtn.getBoundingClientRect();
+
+      const danger = 50;
+      const inDanger =
+        e.clientX > rect.left - danger &&
+        e.clientX < rect.right + danger &&
+        e.clientY > rect.top - danger &&
+        e.clientY < rect.bottom + danger;
+
+      if (!inDanger) return;
+
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      let moveX = centerX - e.clientX;
+      let moveY = centerY - e.clientY;
+
+      const length = Math.hypot(moveX, moveY) || 1;
+      moveX = (moveX / length) * escapeDistance;
+      moveY = (moveY / length) * escapeDistance;
+
+      let newX = rect.left + moveX;
+      let newY = rect.top + moveY;
+
+      const maxX = window.innerWidth - rect.width - padding;
+      const maxY = window.innerHeight - rect.height - padding;
+
+      if (rect.left < padding) newX += escapeDistance;
+      if (rect.right > window.innerWidth - padding) newX -= escapeDistance;
+      if (rect.top < padding) newY += escapeDistance;
+      if (rect.bottom > window.innerHeight - padding) newY -= escapeDistance;
+
+      newX = Math.max(padding, Math.min(maxX, newX));
+      newY = Math.max(padding, Math.min(maxY, newY));
+
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
+    });
+
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+    });
+
+    // YES click → celebration
+    yesBtn.addEventListener("click", () => {
+      celebration.style.display = "block";
+      celebrationGif.style.display = "block";
+      introGif.style.display = "none";
+
+      yesBtn.style.display = "none";
+      noBtn.style.display = "none";
+    });
+  </script>
 
 </body>
 </html>

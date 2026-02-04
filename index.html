@@ -42,7 +42,19 @@
       color: white;
       position: fixed;
       visibility: hidden; /* hide until positioned */
-}
+    }
+
+    .gif {
+      width: 200px;
+      margin: 10px auto;
+    }
+
+    #celebrationGif {
+      display: none;
+      width: 250px;
+      margin: 20px auto;
+    }
+
 
 
     #celebration {
@@ -56,6 +68,18 @@
 
   <div class="container">
     <h1>Will you join me for a trip? 🌍✈️</h1>
+    <img 
+  class="gif"
+  src="https://media.tenor.com/FjMj_01lPz4AAAAM/spongebob-squarepants-spongebob.gif"
+  alt="thinking gif"
+  />
+
+<img 
+  id="celebrationGif"
+  src="https://media.tenor.com/TsNWXQ2E8pAAAAAM/celebration-confetti.gif"
+  alt="celebration gif"
+/>
+
 
     <button id="yesBtn">Yes</button>
     <button id="noBtn">No</button>
@@ -115,9 +139,11 @@
     
       yesBtn.addEventListener("click", () => {
         celebration.style.display = "block";
+        document.getElementById("celebrationGif").style.display = "block";
         yesBtn.style.display = "none";
         noBtn.style.display = "none";
       });
+
 </script>
 
 

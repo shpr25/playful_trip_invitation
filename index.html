@@ -62,26 +62,52 @@
   </div>
 
   <script>
-    const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
-    const celebration = document.getElementById("celebration");
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const celebration = document.getElementById("celebration");
 
-    function moveNoButton() {
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 50);
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+  // Initial position
+  noBtn.style.left = "60%";
+  noBtn.style.top = "60%";
+
+  function moveNoButton(e) {
+    const btnRect = noBtn.getBoundingClientRect();
+
+    const padding = 20;
+    const maxX = window.innerWidth - btnRect.width - padding;
+    const maxY = window.innerHeight - btnRect.height - padding;
+
+  
+    let newX = btnRect.left + (btnRect.left - e.clientX);
+    let newY = btnRect.top + (btnRect.top - e.clientY);
+
+    // Clamp within screen
+    newX = Math.max(padding, Math.min(maxX, newX));
+    newY = Math.max(padding, Math.min(maxY, newY));
+
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
+  }
+
+  // Mouse chase effect
+  document.addEventListener("mousemove", (e) => {
+    const distance = noBtn.getBoundingClientRect();
+    const dx = e.clientX - (distance.left + distance.width / 2);
+    const dy = e.clientY - (distance.top + distance.height / 2);
+
+    const proximity = 120; // how close before it runs
+    if (Math.abs(dx) < proximity && Math.abs(dy) < proximity) {
+      moveNoButton(e);
     }
+  });
 
-    noBtn.addEventListener("mouseover", moveNoButton);
-    noBtn.addEventListener("click", moveNoButton);
+  yesBtn.addEventListener("click", () => {
+    celebration.style.display = "block";
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+  });
+</script>
 
-    yesBtn.addEventListener("click", () => {
-      celebration.style.display = "block";
-      yesBtn.style.display = "none";
-      noBtn.style.display = "none";
-    });
-  </script>
 
 </body>
 </html>

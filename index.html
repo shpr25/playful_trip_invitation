@@ -40,8 +40,11 @@
     #noBtn {
       background-color: #f44336;
       color: white;
-      position: absolute;
+      position: fixed;
+      left: 60%;
+      top: 60%;
     }
+
 
     #celebration {
       display: none;
@@ -61,52 +64,53 @@
     <div id="celebration">🎉🥳 Yay!!! 🎉🥳</div>
   </div>
 
+ 
   <script>
-  const noBtn = document.getElementById("noBtn");
-  const yesBtn = document.getElementById("yesBtn");
-  const celebration = document.getElementById("celebration");
-
-  // Initial position
-  noBtn.style.left = "60%";
-  noBtn.style.top = "60%";
-
-  function moveNoButton(e) {
-    const btnRect = noBtn.getBoundingClientRect();
-
-    const padding = 20;
-    const maxX = window.innerWidth - btnRect.width - padding;
-    const maxY = window.innerHeight - btnRect.height - padding;
-
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const celebration = document.getElementById("celebration");
   
-    let newX = btnRect.left + (btnRect.left - e.clientX);
-    let newY = btnRect.top + (btnRect.top - e.clientY);
-
-    // Clamp within screen
-    newX = Math.max(padding, Math.min(maxX, newX));
-    newY = Math.max(padding, Math.min(maxY, newY));
-
-    noBtn.style.left = newX + "px";
-    noBtn.style.top = newY + "px";
-  }
-
-  // Mouse chase effect
-  document.addEventListener("mousemove", (e) => {
-    const distance = noBtn.getBoundingClientRect();
-    const dx = e.clientX - (distance.left + distance.width / 2);
-    const dy = e.clientY - (distance.top + distance.height / 2);
-
-    const proximity = 120; // how close before it runs
-    if (Math.abs(dx) < proximity && Math.abs(dy) < proximity) {
-      moveNoButton(e);
+    const padding = 16;
+  
+    function moveNoButton(mouseX, mouseY) {
+      const rect = noBtn.getBoundingClientRect();
+  
+      const maxX = window.innerWidth - rect.width - padding;
+      const maxY = window.innerHeight - rect.height - padding;
+  
+      let newX = rect.left + (rect.left - mouseX);
+      let newY = rect.top + (rect.top - mouseY);
+  
+      newX = Math.max(padding, Math.min(maxX, newX));
+      newY = Math.max(padding, Math.min(maxY, newY));
+  
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
     }
-  });
 
-  yesBtn.addEventListener("click", () => {
-    celebration.style.display = "block";
-    yesBtn.style.display = "none";
-    noBtn.style.display = "none";
-  });
+    document.addEventListener("mousemove", (e) => {
+      const rect = noBtn.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width / 2);
+      const dy = e.clientY - (rect.top + rect.height / 2);
+  
+      const triggerDistance = 140;
+  
+      if (Math.hypot(dx, dy) < triggerDistance) {
+        moveNoButton(e.clientX, e.clientY);
+      }
+    });
+  
+    noBtn.addEventListener("click", (e) => {
+      moveNoButton(e.clientX, e.clientY);
+    });
+  
+    yesBtn.addEventListener("click", () => {
+      celebration.style.display = "block";
+      yesBtn.style.display = "none";
+      noBtn.style.display = "none";
+    });
 </script>
+
 
 
 </body>
